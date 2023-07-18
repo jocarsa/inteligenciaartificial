@@ -1,0 +1,5 @@
+El código que proporcionaste utiliza la biblioteca PIL (Python Imaging Library) para abrir una imagen llamada "josevicente.jpg" y cargarla en un objeto de imagen. Luego, utiliza el método load() para obtener acceso a los píxeles de la imagen.
+
+La línea print(pixeles[0,0]) imprime el valor de los píxeles en la posición (0, 0). Los píxeles en PIL son representados como tuplas de valores RGB (rojo, verde, azul) o RGBA (rojo, verde, azul, alfa). Entonces, pixeles[0,0] devuelve el valor de píxel en la esquina superior izquierda de la imagen.
+
+Ten en cuenta que este código asume que la imagen "josevicente.jpg" está ubicada en el mismo directorio que el script de Python o que has proporcionado la ruta completa de la imagen. Además, asegúrate de tener instalada la biblioteca PIL antes de ejecutar el código, ya que no viene incluida en la biblioteca estándar de Python.
