@@ -3,6 +3,8 @@ import random
 import mysql.connector
 import math
 
+anchura = 1920
+altura = 1080
 db_config = {
     "host": "localhost",
     "user": "vidaartificial",
@@ -58,8 +60,8 @@ class Ser:
         self.edad = 0
         self.id = random.randint(0,10000000)
         self.duracion = 10000000000000-random.randint(0,20)
-        self.posx = random.randint(0,512)
-        self.posy = random.randint(0,512)
+        self.posx = random.randint(0,anchura)
+        self.posy = random.randint(0,altura)
         self.posz = 0
         self.rotx = 0
         self.roty = 0
@@ -68,6 +70,7 @@ class Ser:
         self.color = "red"
         self.energia = 1000
         self.hambre = 1
+        self.sexo = random.randint(0,1)
         
 
     def pasoTiempo(self):
@@ -96,17 +99,71 @@ class Ser:
                 #print(angulo)
                 self.posx = self.posx + math.cos(angulo)
                 self.posy = self.posy + math.sin(angulo)
+                if euclidean_distance((self.posx,self.posy),(mejorcandidato.posx,mejorcandidato.posy)) < 2:
+                    self.hambre -= 100
+                    comidas.remove(mejorcandidato)
+                    peticion = '''
+                    DELETE FROM entidades
+                    WHERE
+                    id = '''+str(mejorcandidato.id)+''' '''
+                    #print(peticion)
+                    cursor.execute(peticion)
+                    conexion.commit()
+                    
+                    
             except:
                 pass
-          
-            
+        if self.hambre <  100 and self.edad > 200:
+            distancia = 10000000
+            mejorcandidato = seres[0]
+            for ser in seres:
+                if euclidean_distance((self.posx,self.posy),(ser.posx,ser.posy)) < distancia and ser.sexo != self.sexo:
+                    distancia = euclidean_distance((self.posx,self.posy),(ser.posx,ser.posy))
+                
+                    mejorcandidato = ser
+            try:
+                angulo =  calculate_angle(self.posx,self.posy,mejorcandidato.posx,mejorcandidato.posy)
+                #print(angulo)
+                self.posx = self.posx + math.cos(angulo)
+                self.posy = self.posy + math.sin(angulo)
+                if euclidean_distance((self.posx,self.posy),(mejorcandidato.posx,mejorcandidato.posy)) < 2:
+                    
+                    seres.append(Ser())
+                    
+                    seres[-1].posx = self.posx
+                    seres[-1].posy = self.posy
+                    #print("nacimiento")
+                    peticion = '''
+                    INSERT INTO entidades
+                    VALUES (
+                    NULL,
+                    '''+str(seres[-1].id)+''',
+                    "'''+str(seres[-1].edad)+'''",
+                    "'''+str(seres[-1].posx)+'''",
+                    "'''+str(seres[-1].posy)+'''",
+                    "'''+str(seres[-1].posz)+'''",
+                    "'''+str(seres[-1].rotx)+'''",
+                    "'''+str(seres[-1].roty)+'''",
+                    "'''+str(seres[-1].rotz)+'''",
+                    "'''+str(seres[-1].imagen)+'''",
+                    "'''+str(seres[-1].color)+'''",
+                    "'''+str(seres[-1].sexo)+'''",
+                    "hambre: '''+str(seres[-1].hambre)+'''"
+                    )'''
+                    #print(peticion)
+                    cursor.execute(peticion)
+                    conexion.commit()
+            except:
+                pass
+        
 class Comida:
     def __init__(self):
-        self.posx = random.randint(0,512)
-        self.posy = random.randint(0,512)
+        self.id = random.randint(0,10000000)
+        self.posx = random.randint(0,anchura)
+        self.posy = random.randint(0,altura)
 
 seres = []
-numeroseres = 10
+numeroseres = 100
 for i in range(0,numeroseres):
     seres.append(Ser())
 for ser in seres:
@@ -124,6 +181,7 @@ for ser in seres:
         "'''+str(ser.rotz)+'''",
         "'''+str(ser.imagen)+'''",
         "'''+str(ser.color)+'''",
+        "'''+str(ser.sexo)+'''",
         "hambre: '''+str(ser.hambre)+'''"
         )'''
     
@@ -131,7 +189,7 @@ for ser in seres:
 conexion.commit()
 
 comidas = []
-numerocomida = 10
+numerocomida = 100
 for i in range(0,numerocomida):
     comidas.append(Comida())
 for comida in comidas:
@@ -139,7 +197,7 @@ for comida in comidas:
         INSERT INTO entidades
         VALUES (
         NULL,
-        0,
+        '''+str(comida.id)+''',
         "",
         "'''+str(comida.posx)+'''",
         "'''+str(comida.posy)+'''",
@@ -149,6 +207,7 @@ for comida in comidas:
         "0",
         "0",
         "blue",
+        "",
         "comida"
         )'''
     cursor.execute(peticion)
@@ -156,10 +215,30 @@ conexion.commit()
 
 def bucle():
     #print("Estoy en el bucle")
+    comidas.append(Comida())
+    peticion = '''
+        INSERT INTO entidades
+        VALUES (
+        NULL,
+        '''+str(comidas[-1].id)+''',
+        "",
+        "'''+str(comidas[-1].posx)+'''",
+        "'''+str(comidas[-1].posy)+'''",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "blue",
+        "",
+        "comida"
+        )'''
+    cursor.execute(peticion)
+    conexion.commit()
     for ser in seres:
         ser.pasoTiempo()
         #print(ser.dameEdad())
-        if ser.edad > ser.duracion:
+        if ser.edad > ser.duracion or ser.hambre > 200:
             seres.remove(ser)
             peticion = '''
             DELETE FROM entidades
@@ -171,6 +250,7 @@ def bucle():
         peticion = '''
         UPDATE entidades
         SET
+        edad = "'''+str(ser.edad)+'''",
         posx = "'''+str(ser.posx)+'''",
         posy = "'''+str(ser.posy)+'''",
         mensaje = "hambre: '''+str(ser.hambre)+'''"

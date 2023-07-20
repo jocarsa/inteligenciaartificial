@@ -96,12 +96,22 @@ class Ser:
                 #print(angulo)
                 self.posx = self.posx + math.cos(angulo)
                 self.posy = self.posy + math.sin(angulo)
+                if euclidean_distance((self.posx,self.posy),(mejorcandidato.posx,mejorcandidato.posy)) < 2:
+                    self.hambre -= 100
+                    peticion = '''
+                    DELETE FROM entidades
+                    WHERE
+                    id = '''+str(mejorcandidato.id)+''' '''
+                    print(peticion)
+                    cursor.execute(peticion)
+                    conexion.commit()
+                    
             except:
                 pass
-          
-            
+        
 class Comida:
     def __init__(self):
+        self.id = random.randint(0,10000000)
         self.posx = random.randint(0,512)
         self.posy = random.randint(0,512)
 
@@ -139,7 +149,7 @@ for comida in comidas:
         INSERT INTO entidades
         VALUES (
         NULL,
-        0,
+        '''+str(comida.id)+''',
         "",
         "'''+str(comida.posx)+'''",
         "'''+str(comida.posy)+'''",

@@ -96,17 +96,29 @@ class Ser:
                 #print(angulo)
                 self.posx = self.posx + math.cos(angulo)
                 self.posy = self.posy + math.sin(angulo)
+                if euclidean_distance((self.posx,self.posy),(mejorcandidato.posx,mejorcandidato.posy)) < 2:
+                    self.hambre -= 100
+                    comidas.remove(mejorcandidato)
+                    peticion = '''
+                    DELETE FROM entidades
+                    WHERE
+                    id = '''+str(mejorcandidato.id)+''' '''
+                    print(peticion)
+                    cursor.execute(peticion)
+                    conexion.commit()
+                    
+                    
             except:
                 pass
-          
-            
+        
 class Comida:
     def __init__(self):
+        self.id = random.randint(0,10000000)
         self.posx = random.randint(0,512)
         self.posy = random.randint(0,512)
 
 seres = []
-numeroseres = 10
+numeroseres = 100
 for i in range(0,numeroseres):
     seres.append(Ser())
 for ser in seres:
@@ -131,7 +143,7 @@ for ser in seres:
 conexion.commit()
 
 comidas = []
-numerocomida = 10
+numerocomida = 100
 for i in range(0,numerocomida):
     comidas.append(Comida())
 for comida in comidas:
@@ -139,7 +151,7 @@ for comida in comidas:
         INSERT INTO entidades
         VALUES (
         NULL,
-        0,
+        '''+str(comida.id)+''',
         "",
         "'''+str(comida.posx)+'''",
         "'''+str(comida.posy)+'''",
@@ -159,7 +171,7 @@ def bucle():
     for ser in seres:
         ser.pasoTiempo()
         #print(ser.dameEdad())
-        if ser.edad > ser.duracion:
+        if ser.edad > ser.duracion or ser.hambre > 200:
             seres.remove(ser)
             peticion = '''
             DELETE FROM entidades

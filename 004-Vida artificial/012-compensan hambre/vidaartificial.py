@@ -96,10 +96,11 @@ class Ser:
                 #print(angulo)
                 self.posx = self.posx + math.cos(angulo)
                 self.posy = self.posy + math.sin(angulo)
+                if euclidean_distance((self.posx,self.posy),(mejorcandidato.posx,mejorcandidato.posy)) < 2:
+                    self.hambre -= 100
             except:
                 pass
-          
-            
+        
 class Comida:
     def __init__(self):
         self.posx = random.randint(0,512)

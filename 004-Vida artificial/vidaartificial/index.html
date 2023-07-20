@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            canvas{
+                border:1px solid grey;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="lienzo" width=1920 height=1080></canvas>
+        <script>
+            var imgsexo0 = new Image()
+            imgsexo0.src = "0.png"
+            var imgsexo1 = new Image()
+            imgsexo1.src = "1.png"
+            var imgsexo2 = new Image()
+            imgsexo2.src = "2.png"
+            var contexto = document.getElementById("lienzo").getContext("2d")
+            var temporizador = setTimeout("bucle()",1000)
+            function bucle(){
+                
+                fetch("http://localhost/vidaartificial/json.php")
+                  .then(response => {
+                    return response.json();
+                  })
+                  .then(data => {
+                    contexto.clearRect(0,0,1920,1080)
+                    //console.log(data);
+                    for(var i = 0;i<data.length;i++){
+                        contexto.fillStyle = data[i].color
+                        
+                       
+                        if(data[i].sexo == "0" && data[i].color == "red"){
+                            contexto.drawImage(imgsexo0,data[i].posx,data[i].posy)
+                        }
+                        if(data[i].sexo == "1" && data[i].color == "red"){
+                            contexto.drawImage(imgsexo1,data[i].posx,data[i].posy)
+                        }
+                        if(data[i].color == "blue"){
+                            contexto.drawImage(imgsexo2,data[i].posx,data[i].posy)
+                        }
+                        
+                        //contexto.fillText(data[i].mensaje,data[i].posx,data[i].posy-5)
+                        //contexto.fillText("edad:"+data[i].edad,data[i].posx,data[i].posy-15)
+                    }
+                  }).catch(error => {
+                    
+                  });
+                
+                clearTimeout(temporizador)
+                temporizador = setTimeout("bucle()",100)
+            }
+        </script>
+    </body>
+</html>
