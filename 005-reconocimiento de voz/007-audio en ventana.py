@@ -56,7 +56,7 @@ def texto_a_voz(texto, idioma='es'):
 
 def get_chat_response(prompt):
     url = "https://api.openai.com/v1/chat/completions"
-    api_key = "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"  # Reemplaza esto con tu clave de API de OpenAI
+    api_key = ""  # Reemplaza esto con tu clave de API de OpenAI
 
     headers = {
         "Content-Type": "application/json",
