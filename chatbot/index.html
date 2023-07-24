@@ -1,0 +1,66 @@
+<!doctype>
+<html>
+    <head>
+        <style>
+            body{background:grey;font-family: sans-serif;}
+            #contenedor{
+                background:white;
+                width:400px;
+                margin:auto;
+                height:100%;
+                position:relative;
+                padding:20px;
+                box-sizing: border-box
+            }
+            #habla{
+                position:absolute;
+                bottom:20px;
+            }
+            .pregunta{
+                width:70%;float:right;padding:10px;border:1px solid grey;
+                background:rgb(255,255,200);
+                 margin:10px;
+                border-radius:10px 0px 10px 10px;
+            }
+            .respuesta{
+                width:70%;float:left;padding:10px;border:1px solid grey;
+                background:rgb(200,255,200);
+                margin:10px;
+                border-radius:0px 10px 10px 10px;
+            }
+            #mensajes{
+                height:90%;
+                overflow-y: scroll;
+                background:rgb(220,220,220);
+               font-size:11px;
+                text-align:justify;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="contenedor">
+            <div id="mensajes"></div>
+            <div id="habla">
+                <input type="text" id="texto">
+                <button id="envia">Envia</button>
+            </div>
+        </div>
+        <script>
+            
+            document.getElementById("envia").onclick = function(){
+                pregunta = document.getElementById("texto").value
+                document.getElementById("texto").value = ""
+                document.getElementById("mensajes").innerHTML += '<div class="pregunta">'+pregunta+"</div>"
+                document.getElementById("mensajes").scrollTop = 1000000
+                fetch("pregunta.php?pregunta="+pregunta)
+                .then(function(response){
+                    return response.text();
+                }) // Parse response data as JSON
+                .then(function(datos){
+                    document.getElementById("mensajes").innerHTML += '<div class="respuesta">'+datos+"</div>"
+                    document.getElementById("mensajes").scrollTop = 1000000
+                }) 
+            }
+        </script>
+    </body>
+</html>
